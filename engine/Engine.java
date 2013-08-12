@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package engine;
 
 import engine.core.GameInput;
@@ -15,7 +11,6 @@ import org.lwjgl.openal.AL;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
-import org.lwjgl.util.glu.GLU;
 
 /**
  *
@@ -77,11 +72,10 @@ public class Engine extends DisplayObject {
             
             super.update(deltaTime);
             
-            glClear(GL_COLOR_BUFFER_BIT);// | GL_DEPTH_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT);
 
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
-            //GLU.gluOrtho2D(0, sceneWidth, sceneHeight, 0);
             glOrtho(0, sceneWidth, sceneHeight, 0, -1000, 1000);
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
@@ -97,8 +91,6 @@ public class Engine extends DisplayObject {
     }
     
     private void initOpenGL() {
-        //glEnable(GL_DEPTH_TEST);
-
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
         
