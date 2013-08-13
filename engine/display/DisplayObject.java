@@ -233,16 +233,19 @@ public class DisplayObject implements Renderable {
         Collections.sort(children, new DisplayObjectComparator());
     }
 
-    @Override
+    /**
+     * Render this Display Object
+     * 
+     */
+    @Override    
     public void render() {
-
         glPushMatrix();
         glTranslatef(position.x, position.y, position.z);
         glScalef(scaleX, scaleY, 1);
         glRotatef(rotation, 0, 0, 1);
 
         if (color != null) {
-            color.glColor();
+            glColor3f(color.r, color.g, color.b);
         }
 
         selfRender();

@@ -1,6 +1,5 @@
 package engine.core.types;
 
-import org.lwjgl.opengl.GL11;
 
 /**
  *
@@ -19,6 +18,7 @@ public class Color {
         WHITE = new Color(1, 1, 1);
         RED = new Color(1, 0, 0);
     }
+    
     public float r;
     public float g;
     public float b;
@@ -40,9 +40,5 @@ public class Color {
 
     public Color clone() {
         return new Color(r, g, b, a);
-    }
-
-    public void glColor() {
-        GL11.glColor4f(r, g, b, a);
     }
 }

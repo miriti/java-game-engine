@@ -23,6 +23,7 @@ public class TextureManager {
                 String extension = pathElements[pathElements.length - 1].toUpperCase();
                 Texture newTexture = TextureLoader.getTexture(extension, ResourceLoader.getResourceAsStream(path));
                 textures.put(path, newTexture);
+                System.out.println("Texture loaded [" + path + "]: " + newTexture.getImageWidth() + "x" + newTexture.getImageHeight());
             } catch (IOException ex) {
                 Logger.getLogger(TextureManager.class.getName()).log(Level.SEVERE, null, ex);
                 return null;

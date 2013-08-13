@@ -192,8 +192,8 @@ public class GameInput {
             axisX.set(0, Mouse.getDX() / mouseSensivity);
             axisY.set(0, -Mouse.getDY() / mouseSensivity);
         } else {
-            mouseX = (int) ((float) Mouse.getX() / (float) Engine.getInstance().getWidth() * Engine.getInstance().getSceneWidth());
-            mouseY = (int) ((float) (Engine.getInstance().getHeight() - Mouse.getY()) / (float) Engine.getInstance().getHeight() * Engine.getInstance().getSceneHeight());
+            mouseX = (int) ((float) Mouse.getX() / (float) Engine.getInstance().getWidth() * Engine.getInstance().getDevice().getScreenWidth());
+            mouseY = (int) ((float) (Engine.getInstance().getHeight() - Mouse.getY()) / (float) Engine.getInstance().getHeight() * Engine.getInstance().getDevice().getScreenHeight());
 
             int mouseButtonCount = Mouse.getButtonCount();
 

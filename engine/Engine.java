@@ -2,131 +2,94 @@ package engine;
 
 import engine.core.GameInput;
 import engine.core.types.Color;
+import engine.devices.Device;
 import engine.display.DisplayObject;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.openal.AL;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
-import static org.lwjgl.opengl.GL11.*;
 
 /**
  *
  * @author Michael Miriti <michael@miriti.ru>
  */
 public class Engine extends DisplayObject {
-    
+
     private static Engine instance = null;
-    private DisplayObject _mainClass;
-    private int windowWidth;
-    private int windowHeight;
-    private float sceneWidth;
-    private float sceneHeight;
+    private DisplayObject currentState = null;
+    private Device device;
     public static GameInput gameInput = null;
-    
-    public Engine(DisplayObject mainClass, int windowWidth, int windowHeight) {
+
+    public Engine(Device onDevice, int windowWidth, int windowHeight, boolean fullscreen) {
         super();
         System.out.println("Initialization...");
+        device = onDevice;
         instance = this;
-        _mainClass = mainClass;
-        try {
-            width = windowWidth;
-            height = windowHeight;
-            this.windowWidth = windowWidth;
-            this.windowHeight = windowHeight;
-            sceneWidth = windowWidth;
-            sceneHeight = windowHeight;
-            Display.setDisplayMode(new DisplayMode(windowWidth, windowHeight));
-            Display.create();
-            
-            initOpenGL();
-        } catch (LWJGLException ex) {
-            Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        width = windowWidth;
+        height = windowHeight;
+
+        device.initDevice();
+        device.requestDisplayMode(windowWidth, windowHeight, fullscreen);
+        setSceneSize(windowWidth, windowHeight);
+        device.setClearColor(Color.CORNFLOWER_BLUE);
     }
-    
+
+    public void setSceneSize(float sceneWidth, float sceneHeight) {
+        device.setSceneSize(sceneWidth, sceneHeight);
+    }
+
     public void setTitle(String title) {
-        Display.setTitle(title);
+        device.setTitle(title);
     }
-    
+
+    public Device getDevice() {
+        return device;
+    }
+
     public void start() {
-        addChild(_mainClass);
-        
         long lastTime = new Date().getTime();
-        
-        while (!Display.isCloseRequested()) {
-            
+
+        while (!device.isCloseRequested()) {
             long currentTime = new Date().getTime();
             long deltaTime = currentTime - lastTime;
             lastTime = currentTime;
-            
+
             if (deltaTime == 0) {
                 continue;
             }
-            
+
             if (gameInput != null) {
                 gameInput.update(deltaTime);
             }
-            
-            super.update(deltaTime);
-            
-            glClear(GL_COLOR_BUFFER_BIT);
 
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            glOrtho(0, sceneWidth, sceneHeight, 0, -1000, 1000);
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
-            
-            _mainClass.render();
-            
-            Display.update();
-            Display.sync(60);
+            super.update(deltaTime);
+
+            device.beforeRender();
+
+            if (currentState != null) {
+                currentState.render();
+            }
+
+            device.afterRender();
         }
-        
-        AL.destroy();
-        Display.destroy();
+
+        device.destroyDivice();
     }
-    
-    private void initOpenGL() {
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_BLEND);
-        
-        setClearColor(Color.CORNFLOWER_BLUE);
-    }
-    
+
     public void quit() {
-        System.exit(0);
+        device.terminate();
     }
-    
+
+    public DisplayObject getCurrentState() {
+        return currentState;
+    }
+
+    public void setCurrentState(DisplayObject currentState) {
+        this.currentState = currentState;
+    }
+
     public void setClearColor(Color color) {
-        glClearColor(color.r, color.g, color.b, color.a);
+        device.setClearColor(color);
     }
-    
+
     public static Engine getInstance() {
         return instance;
-    }
-    
-    public float getSceneWidth() {
-        return sceneWidth;
-    }
-    
-    public void setSceneWidth(float sceneWidth) {
-        this.sceneWidth = sceneWidth;
-    }
-    
-    public float getSceneHeight() {
-        return sceneHeight;
-    }
-    
-    public void setSceneHeight(float sceneHeight) {
-        this.sceneHeight = sceneHeight;
-    }
-    
-    public void setSceneSize(float sceneWidth, float sceneHeight) {
-        this.sceneWidth = sceneWidth;
-        this.sceneHeight = sceneHeight;
     }
 }
