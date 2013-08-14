@@ -1,6 +1,5 @@
 package engine;
 
-import engine.core.GameInput;
 import engine.core.types.Color;
 import engine.devices.Device;
 import engine.display.DisplayObject;
@@ -15,7 +14,7 @@ public class Engine extends DisplayObject {
     private static Engine instance = null;
     private DisplayObject currentState = null;
     private Device device;
-    public static GameInput gameInput = null;
+    private static long currentTime = 0;
 
     public Engine(Device onDevice, int windowWidth, int windowHeight, boolean fullscreen) {
         super();
@@ -27,6 +26,7 @@ public class Engine extends DisplayObject {
 
         device.initDevice();
         device.requestDisplayMode(windowWidth, windowHeight, fullscreen);
+        device.init();
         setSceneSize(windowWidth, windowHeight);
         device.setClearColor(Color.CORNFLOWER_BLUE);
     }
@@ -39,6 +39,10 @@ public class Engine extends DisplayObject {
         device.setTitle(title);
     }
 
+    public static long getCurrentTime() {
+        return currentTime;
+    }
+
     public Device getDevice() {
         return device;
     }
@@ -47,7 +51,7 @@ public class Engine extends DisplayObject {
         long lastTime = new Date().getTime();
 
         while (!device.isCloseRequested()) {
-            long currentTime = new Date().getTime();
+            currentTime = new Date().getTime();
             long deltaTime = currentTime - lastTime;
             lastTime = currentTime;
 
@@ -55,17 +59,15 @@ public class Engine extends DisplayObject {
                 continue;
             }
 
-            if (gameInput != null) {
-                gameInput.update(deltaTime);
+            if (device.getInput() != null) {
+                device.getInput().update(deltaTime);
             }
 
             super.update(deltaTime);
 
             device.beforeRender();
-
-            if (currentState != null) {
-                currentState.render();
-            }
+            
+            super.render();
 
             device.afterRender();
         }
@@ -82,7 +84,11 @@ public class Engine extends DisplayObject {
     }
 
     public void setCurrentState(DisplayObject currentState) {
+        if (this.currentState != null) {
+            removeChild(this.currentState);
+        }
         this.currentState = currentState;
+        addChild(currentState);
     }
 
     public void setClearColor(Color color) {

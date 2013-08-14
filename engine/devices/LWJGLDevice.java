@@ -1,7 +1,8 @@
 package engine.devices;
 
-import engine.core.GameInput;
 import engine.core.types.Color;
+import engine.devices.input.Input;
+import engine.devices.input.PCInput;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.LWJGLException;
@@ -27,15 +28,16 @@ public class LWJGLDevice extends Device {
     public void setSceneSize(float newSceneWidth, float newSceneHeight) {
         sceneWidth = newSceneWidth;
         sceneHeight = newSceneHeight;
-
-        System.out.print(sceneWidth);
-        System.out.print(" ");
-        System.out.print(sceneHeight);
-        System.out.println();
     }
 
     @Override
-    public void initDevice() {        
+    public void initDevice() {
+    }
+
+    @Override
+    public void init() {
+        initOpenGL();
+        input = new PCInput();
     }
 
     private void initOpenGL() {
@@ -96,11 +98,14 @@ public class LWJGLDevice extends Device {
                         break;
                     }
                 }
-
             }
 
             if ((!fullscreen) || (!fullscreenSuccess)) {
                 Display.setDisplayMode(new DisplayMode(screenWidth, screenHeight));
+            } else {
+                if (!fullscreenSuccess) {
+                    System.err.println("Fullscreen failed");
+                }
             }
 
             Display.create();
@@ -110,8 +115,6 @@ public class LWJGLDevice extends Device {
         } catch (LWJGLException ex) {
             Logger.getLogger(LWJGLDevice.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        initOpenGL();
     }
 
     @Override
@@ -142,5 +145,10 @@ public class LWJGLDevice extends Device {
     @Override
     public float getSceneHeight() {
         return sceneHeight;
+    }
+
+    @Override
+    public Input getInput() {
+        return input;
     }
 }

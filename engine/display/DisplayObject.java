@@ -1,7 +1,10 @@
 package engine.display;
 
+import engine.Engine;
 import engine.core.DisplayObjectComparator;
 import engine.core.types.Color;
+import engine.devices.Device;
+import engine.devices.input.Input;
 import engine.interfaces.Renderable;
 import engine.interfaces.Updateable;
 import java.util.ArrayList;
@@ -27,6 +30,7 @@ public class DisplayObject implements Renderable {
     protected float pivotY = 0;
     protected float scaleX = 1;
     protected float scaleY = 1;
+    protected boolean visible = true;
     public float rotation = 0f;
     protected Color color = null;
     protected DisplayObject parent;
@@ -43,6 +47,14 @@ public class DisplayObject implements Renderable {
 
     public DisplayObject(float atX, float atY) {
         position = new Vector3f(atY, atY, 0f);
+    }
+
+    public Device getDevice() {
+        return Engine.getInstance().getDevice();
+    }
+
+    public Input getInput() {
+        return getDevice().getInput();
     }
 
     public float getPivotX() {
@@ -235,28 +247,30 @@ public class DisplayObject implements Renderable {
 
     /**
      * Render this Display Object
-     * 
+     *
      */
-    @Override    
+    @Override
     public void render() {
-        glPushMatrix();
-        glTranslatef(position.x, position.y, position.z);
-        glScalef(scaleX, scaleY, 1);
-        glRotatef(rotation, 0, 0, 1);
+        if (visible) {
+            glPushMatrix();
+            glTranslatef(position.x, position.y, position.z);
+            glScalef(scaleX, scaleY, 1);
+            glRotatef(rotation, 0, 0, 1);
 
-        if (color != null) {
-            glColor3f(color.r, color.g, color.b);
+            if (color != null) {
+                glColor3f(color.r, color.g, color.b);
+            }
+
+            selfRender();
+
+            sortChildren();
+            for (int i = 0; i < children.size(); i++) {
+                DisplayObject current = children.get(i);
+                current.render();
+            }
+
+            glPopMatrix();
         }
-
-        selfRender();
-
-        sortChildren();
-        for (int i = 0; i < children.size(); i++) {
-            DisplayObject current = children.get(i);
-            current.render();
-        }
-
-        glPopMatrix();
     }
 
     @Override
@@ -278,6 +292,14 @@ public class DisplayObject implements Renderable {
     @Override
     public boolean finished() {
         return false;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
     public boolean isInteractive() {
