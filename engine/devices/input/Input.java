@@ -12,6 +12,8 @@ abstract public class Input {
     protected HashMap<String, Float> inputData = new HashMap<>();
 
     abstract public void initInput();
+    
+    abstract public void destroyInput();
 
     abstract public void update(long deltaTime);
 

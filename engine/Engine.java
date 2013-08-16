@@ -31,7 +31,7 @@ public class Engine extends DisplayObject {
         device.setClearColor(Color.CORNFLOWER_BLUE);
     }
 
-    public void setSceneSize(float sceneWidth, float sceneHeight) {
+    public final void setSceneSize(float sceneWidth, float sceneHeight) {
         device.setSceneSize(sceneWidth, sceneHeight);
     }
 
@@ -43,6 +43,7 @@ public class Engine extends DisplayObject {
         return currentTime;
     }
 
+    @Override
     public Device getDevice() {
         return device;
     }

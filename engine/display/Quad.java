@@ -18,20 +18,14 @@ public class Quad extends DisplayObject {
     };
     protected Color[] vertexColor;
     protected Vector2f[] vertexes;
+    private boolean centeredQuad = false;
 
     public Quad(float quadWidth, float quadHeight, Color quadColor) {
         super();
 
         width = quadWidth;
         height = quadHeight;
-        color = quadColor;
-
-        vertexColor = new Color[]{
-            quadColor,
-            quadColor,
-            quadColor,
-            quadColor
-        };
+        setColor(quadColor);
 
         vertexes = new Vector2f[]{
             new Vector2f(0, 0),
@@ -48,31 +42,27 @@ public class Quad extends DisplayObject {
 
         width = quadWidth;
         height = quadHeight;
-        color = quadColor;
+        setColor(quadColor);
 
-        vertexColor = new Color[]{
-            quadColor,
-            quadColor,
-            quadColor,
-            quadColor
+        vertexes = new Vector2f[]{
+            new Vector2f(0, 0),
+            new Vector2f(width, 0),
+            new Vector2f(width, height),
+            new Vector2f(0, height)
         };
 
-        // TODO Bydlocode
-        if (centered) {
-            vertexes = new Vector2f[]{
-                new Vector2f(-width / 2, -height / 2),
-                new Vector2f(width / 2, -height / 2),
-                new Vector2f(width / 2, height / 2),
-                new Vector2f(-width / 2, height / 2)
-            };
-        } else {
-            vertexes = new Vector2f[]{
-                new Vector2f(0, 0),
-                new Vector2f(width, 0),
-                new Vector2f(width, height),
-                new Vector2f(0, height)
-            };
-        }
+        centeredQuad = centered;
+    }
+
+    @Override
+    public final void setColor(Color color) {
+        super.setColor(color);
+        vertexColor = new Color[]{
+            color,
+            color,
+            color,
+            color
+        };
     }
 
     public Color[] getVertexColor() {
@@ -81,6 +71,19 @@ public class Quad extends DisplayObject {
 
     @Override
     protected void selfRender() {
+
+        if (centeredQuad) {
+            vertexes[0].set(-width / 2, -height / 2);
+            vertexes[1].set(width / 2, -height / 2);
+            vertexes[2].set(width / 2, height / 2);
+            vertexes[3].set(-width / 2, height / 2);
+        } else {
+            vertexes[0].set(0, 0);
+            vertexes[1].set(width, 0);
+            vertexes[2].set(width, height);
+            vertexes[3].set(0, height);
+        }
+
         glBegin(GL_QUADS);
 
         glTexCoord2f(texCoords[0].x, texCoords[0].y);
@@ -96,5 +99,12 @@ public class Quad extends DisplayObject {
         glVertex2f(vertexes[3].x, vertexes[3].y);
 
         glEnd();
+    }
+
+    public void setTiles(float horizontal, float vertical) {
+        texCoords[1].x = horizontal;
+        texCoords[2].x = horizontal;
+        texCoords[2].y = vertical;
+        texCoords[3].y = vertical;
     }
 }

@@ -190,19 +190,18 @@ public class DisplayObject implements Renderable {
         }
     }
 
-    public DisplayObject addChild(DisplayObject child) {
-        nextZ += 0.00001f;
+    public DisplayObject addChild(DisplayObject child) {        
+        if (child.parent != null) {
+            child.parent.removeChild(child);
+        }
         children.add(child);
         child.onAdded(this);
         return child;
     }
 
     public DisplayObject addChildAt(DisplayObject child, float atX, float atY) {
-        child.getPosition().set(atX, atY, nextZ);
+        child.getPosition().set(atX, atY, 0f);
         addChild(child);
-        if (nextZ > 1) {
-            nextZ = 0;
-        }
         return child;
     }
 
@@ -258,7 +257,7 @@ public class DisplayObject implements Renderable {
             glRotatef(rotation, 0, 0, 1);
 
             if (color != null) {
-                glColor3f(color.r, color.g, color.b);
+                glColor4f(color.r, color.g, color.b, color.a);
             }
 
             selfRender();

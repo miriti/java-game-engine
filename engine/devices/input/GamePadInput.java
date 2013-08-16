@@ -1,8 +1,12 @@
 package engine.devices.input;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Mouse;
 
 /**
  *
@@ -15,13 +19,18 @@ public class GamePadInput extends Input {
     @Override
     public void initInput() {
         if (available()) {
+            try {
+                Mouse.create();
+                Mouse.setGrabbed(true);
+            } catch (LWJGLException ex) {
+                Logger.getLogger(GamePadInput.class.getName()).log(Level.SEVERE, null, ex);
+            }
             for (Controller c : ControllerEnvironment.getDefaultEnvironment().getControllers()) {
                 if (c.getType() == Controller.Type.GAMEPAD) {
                     System.out.println("Gamepad found: " + c.getName());
                     controller = c;
                     System.out.println("Components [" + c.getComponents().length + "]");
                     for (Component cm : c.getComponents()) {
-                        //gamePadButtonsDown.put(cm.getIdentifier(), false);
                         System.out.println(cm.getIdentifier() + ": " + cm.getName());
                     }
                     System.out.println("Rumblers [" + c.getRumblers().length + "]");
@@ -56,5 +65,10 @@ public class GamePadInput extends Input {
                 inputData.put(idName, data);
             }
         }
+    }
+
+    @Override
+    public void destroyInput() {
+        Mouse.destroy();
     }
 }
