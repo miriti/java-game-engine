@@ -62,7 +62,7 @@ public class GamePadInput extends Input {
             for (Component c : controller.getComponents()) {
                 String idName = c.getIdentifier().getName();
                 float data = c.getPollData();
-                inputData.put(idName, data);
+                inputFloatData.put(idName, data);
             }
         }
     }
@@ -70,5 +70,30 @@ public class GamePadInput extends Input {
     @Override
     public void destroyInput() {
         Mouse.destroy();
+    }
+
+    @Override
+    public String getType() {
+        return "gamepad";
+    }
+
+    @Override
+    public boolean isLeft() {
+        return getFloatData("x") < -0.5f;
+    }
+
+    @Override
+    public boolean isRight() {
+        return getFloatData("x") > 0.5f;
+    }
+
+    @Override
+    public boolean isUp() {
+        return getFloatData("y") < -0.5f;
+    }
+
+    @Override
+    public boolean isDown() {
+        return getFloatData("y") > 0.5f;
     }
 }
